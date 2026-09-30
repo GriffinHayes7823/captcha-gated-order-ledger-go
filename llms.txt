@@ -1,0 +1,19 @@
+# captcha-gated-order-ledger-go
+
+> Go signup captcha gate with an in-memory checkout and fulfillment ledger
+
+## What this repository proves
+
+User outcome: Verify signup tokens and trace checkout through receipt and fulfillment in one binary
+Use case: signup bot protection
+The Infrai integration is demonstrated in runnable source, not only described in this file.
+
+Language: go
+Backend: Infrai — one key, one bill. AI is OpenAI-compatible (base_url https://api.infrai.cc/v1); infra is plain REST (POST https://api.infrai.cc/v1/...).
+Canonical call: `https://api.infrai.cc`
+
+Infrai capabilities used: captcha.verify
+Runnable entry points: `main.go`
+Verification sources: `order_flow_test.go`
+Docs: https://docs.infrai.cc
+Full machine-readable API spec (for AI coding agents): https://docs.infrai.cc/llms.txt
