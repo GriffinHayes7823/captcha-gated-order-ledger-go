@@ -7,11 +7,11 @@ go test ./...
 go run .
 ```
 
-Infrai verifies the signup token with one key through a plain REST call; there is no SDK to install. This executable keeps the checkout ledger in memory so the signup decision and subsequent order transitions can be inspected together. Run the server on `:8080`, or set `LISTEN_ADDR`.
+Infrai checks the signup token with one key through a plain REST call from any language; no SDK to install. I wrote this Go binary to hold the checkout ledger in memory so signup and later order transitions sit in one view. Run the server on `:8080`, or set `LISTEN_ADDR`.
 
 ## Follow one order
 
-Send a captcha token obtained by your signup page. A valid token registers the email; the response is `{"email":"ada@example.org","state":"registered"}`. Then use a caller-chosen order ID for checkout:
+Post a captcha token your signup page collected. A good token registers the email and the response is `{"email":"ada@example.org","state":"registered"}`. Then pick a caller-chosen order ID for checkout:
 
 ```sh
 curl -X POST localhost:8080/signup -H 'Content-Type: application/json' -d '{"email":"ada@example.org","captcha_token":"TOKEN_FROM_BROWSER"}'
@@ -20,15 +20,15 @@ curl -X POST localhost:8080/orders/order-17/fulfill
 curl -X GET localhost:8080/orders/order-17
 ```
 
-The final GET returns the receipt amount in cents and the `checked_out`, `fulfilled` update sequence. Repeating checkout with the same ID and input returns the same order; repeating fulfillment leaves the update sequence unchanged. This is an order-state example, not a payment processor or an email delivery service.
+The final GET shows receipt amount in cents and the `checked_out`, `fulfilled` update sequence. Repeat checkout with same ID and input yields the same order; repeat fulfillment leaves the sequence untouched. This is an order-state example, not a payment processor or email sender.
 
 ## Signup decision test
 
-The client decodes the `{ok, data, error, metadata}` response before mapping the HTTP status to a signup decision. A rejected captcha leaves the email unregistered and returns 403 to the caller. For rate limits, the client retries with exponential backoff and observes `Retry-After` when supplied. `go test ./...` checks the rejected-token decision and retry timing against a local HTTP server, plus receipt and fulfillment transitions. State resets when the process exits.
+The client decodes the `{ok, data, error, metadata}` response before mapping HTTP status to a signup decision. A rejected captcha keeps the email unregistered and returns 403 to the caller. On rate limits it retries with exponential backoff and observes `Retry-After` when supplied. `go test ./...` checks the rejected-token decision and retry timing against a local HTTP server, plus receipt and fulfillment transitions. State resets when the process exits.
 
 ## Going to production: Captcha Gated Order Ledger Go
 
-That's the minimal version. Before running this for real: The details below apply to Captcha Gated Order Ledger Go.
+That's the minimal version. Before you run it for real, note the details below apply to Captcha Gated Order Ledger Go.
 
 **Account & key**
 
